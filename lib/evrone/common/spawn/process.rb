@@ -12,11 +12,8 @@ module Evrone
           options = args.last.is_a?(Hash)  ? args.pop   : {}
           cmd     = args.join(" ")
 
-          timeout        = options.delete(:timeout)
-          select_timeout = options.delete(:select_timeout) || Spawn.pool_interval
-          timeout_error  = false
-          time_end       = (timeout.to_f > 0) ? Time.now + timeout.to_f : nil
-
+          select_timeout = options.delete(:pool_interval) || Spawn.pool_interval
+          timeout        = Spawn::Timeout.new options.delete(:timeout)
           read_timeout   = Spawn::ReadTimeout.new options.delete(:read_timeout)
 
           r,w = IO.pipe
@@ -27,38 +24,31 @@ module Evrone
 
           read_timeout.reset
           loop do
-            rs, _, _ = IO.select([r], nil, nil, select_timeout)
+            break if timeout.happened?
 
-            if !rs && read_timeout.happened?
-              timeout_error = :read_timeout
-              break
-            end
+            rs, _, _ = IO.select([r], nil, nil, select_timeout)
 
             if rs
               break if rs[0].eof?
               yield rs[0].readpartial(8192)
               read_timeout.reset
-            end
-
-            if time_end && Time.now > time_end
-              timeout_error = :timeout
-              break
+            else
+              break if read_timeout.happened?
             end
           end
 
           ::Process.kill 'KILL', pid
           _, status = ::Process.wait2(pid) # protect from zombies
 
-          case timeout_error
-          when :read_timeout
+          case
+          when read_timeout.happened?
             raise Spawn::ReadTimeoutError.new cmd, read_timeout.value
-          when :timeout
-            raise Spawn::TimeoutError.new cmd, timeout
+          when timeout.happened?
+            raise Spawn::TimeoutError.new cmd, timeout.value
           else
             termsig   = status.termsig
             exit_code = status.exitstatus
-
-            exit_code || (termsig && termsig * -1)
+            exit_code || (termsig && termsig * -1) || -1
           end
 
         end

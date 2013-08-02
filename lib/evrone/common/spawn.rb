@@ -7,6 +7,7 @@ module Evrone
 
       autoload :Process,     File.expand_path("../spawn/process",      __FILE__)
       autoload :SSH,         File.expand_path("../spawn/ssh",          __FILE__)
+      autoload :Timeout,     File.expand_path("../spawn/timeout",      __FILE__)
       autoload :ReadTimeout, File.expand_path("../spawn/read_timeout", __FILE__)
 
       class << self

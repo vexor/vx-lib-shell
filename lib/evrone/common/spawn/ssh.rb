@@ -29,10 +29,8 @@ module Evrone
           command = args.join(" ")
 
           exit_code     = nil
-          timeout       = options.delete(:timeout)
+          timeout       = Spawn::Timeout.new options.delete(:timeout)
           read_timeout  = Spawn::ReadTimeout.new options.delete(:read_timeout)
-          timeout_error = false
-          time_end      = (timeout.to_f > 0) ? Time.new + timeout.to_f : nil
 
           channel = spawn_channel env, command, read_timeout, &block
 
@@ -41,22 +39,18 @@ module Evrone
           end
 
           @ssh.loop Spawn.pool_interval do
-            if read_timeout.happened?
-              timeout_error = :read_timeout
-              false
-            elsif time_end && Time.now > time_end
-              timeout_error = :timeout
+            if read_timeout.happened? || timeout.happened?
               false
             else
               channel.active?
             end
           end
 
-          case timeout_error
-          when :read_timeout
+          case
+          when read_timeout.happened?
             raise Spawn::ReadTimeoutError.new command, read_timeout.value
-          when :timeout
-            raise Spawn::TimeoutError.new command, timeout
+          when timeout.happened?
+            raise Spawn::TimeoutError.new command, timeout.value
           else
             exit_code || -1 # nil exit_code means that the process is killed
           end
