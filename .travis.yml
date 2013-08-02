@@ -1,9 +1,4 @@
 rvm:
 - 1.9.3
 - 2.0.0
-env:
-  global:
-    - SSH_USER=travis
-    - SSH_USER=localhost
-    - SSH_PASS=travis
-script: bundle exec rake SPEC_OPTS='-fd --color --order=rand'
+script: bundle exec rake SPEC_OPTS='-fd --color --order=rand -t ~ssh'

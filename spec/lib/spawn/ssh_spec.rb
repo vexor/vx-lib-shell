@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'timeout'
 
-describe Evrone::Common::Spawn::SSH do
+describe Evrone::Common::Spawn::SSH, ssh: true do
 
   let(:user) { ENV['SSH_USER'] }
   let(:host) { ENV['SSH_HOST'] }
