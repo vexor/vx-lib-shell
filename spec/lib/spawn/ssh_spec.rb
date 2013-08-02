@@ -26,16 +26,46 @@ describe Evrone::Common::Spawn::SSH, ssh: true do
     expect(code).to eq 0
   end
 
-  it 'run command with timeout' do
-    expect{
-      run_ssh('echo $USER; sleep 2', timeout: 1)
-    }.to raise_error(Evrone::Common::Spawn::TimeoutError)
+  context "timeout" do
+    it 'run command with timeout' do
+      expect{
+        run_ssh('echo $USER; sleep 0.5', timeout: 0.2)
+      }.to raise_error(Evrone::Common::Spawn::TimeoutError)
+    end
+
+    it 'run command with timeout successfuly' do
+      code = run_ssh('echo $USER; sleep 0.2', timeout: 0.5)
+      expect(collected).to eq "#{user}\n"
+      expect(code).to eq 0
+    end
   end
 
-  it 'run command with timeout successfuly' do
-    code = run_ssh('echo $USER; sleep 1', timeout: 2)
-    expect(collected).to eq "#{user}\n"
-    expect(code).to eq 0
+  context "read_timeout" do
+    it 'run command with read timeout' do
+      expect{
+        run_ssh('sleep 0.5', read_timeout: 0.2)
+      }.to raise_error(Evrone::Common::Spawn::ReadTimeoutError)
+      expect(collected).to eq ""
+    end
+
+    it 'run command with read timeout in loop' do
+      expect{
+        run_ssh('sleep 0.1 ; echo $USER ; sleep 0.5', read_timeout: 0.3)
+      }.to raise_error(Evrone::Common::Spawn::ReadTimeoutError)
+      expect(collected).to eq "#{user}\n"
+    end
+
+    it 'run command with read timeout successfuly' do
+      code = run_ssh('echo $USER; sleep 0.1', read_timeout: 0.5)
+      expect(collected).to eq "#{user}\n"
+      expect(code).to eq 0
+    end
+
+    it 'run command with read timeout in loop successfuly' do
+      code = run_ssh('sleep 0.3 ; echo $USER; sleep 0.3 ; echo $USER', read_timeout: 0.5)
+      expect(collected).to eq "#{user}\n#{user}\n"
+      expect(code).to eq 0
+    end
   end
 
   it 'run and kill process' do
