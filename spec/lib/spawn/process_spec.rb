@@ -34,7 +34,7 @@ describe Evrone::Common::Spawn::Process do
     end
 
     it 'run command with timeout successfuly' do
-      code = run( {'FOO' => "BAR" }, "echo $FOO && sleep 0.1", timeout: 0.2)
+      code = run( {'FOO' => "BAR" }, "echo $FOO && sleep 0.1", timeout: 0.5)
       expect(subject).to eq "BAR\n"
       expect(code).to eq 0
     end

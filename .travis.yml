@@ -1,4 +1,12 @@
 rvm:
-- 1.9.3
-- 2.0.0
-script: bundle exec rake SPEC_OPTS='-fd --color --order=rand -t ~ssh'
+  - 1.9.3
+  - 2.0.0
+before_install:
+  - echo 'travis:travis' | sudo chpasswd
+  - echo 'PasswordAuthentication yes' | sudo tee -a /etc/ssh/sshd_config
+  - sudo service ssh restart
+before_script:
+  - export SSH_USER=travis
+  - export SSH_PASS=travis
+  - export SSH_HOST=localhost
+script: bundle exec rake SPEC_OPTS='-fd --color --order=rand'
