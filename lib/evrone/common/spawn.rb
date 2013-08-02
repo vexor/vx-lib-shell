@@ -1,3 +1,4 @@
+require 'timeout'
 require File.expand_path("../spawn/version", __FILE__)
 
 module Evrone
@@ -16,6 +17,9 @@ module Evrone
       def spawn(*args, &block)
         Common::Spawn::Process.spawn(*args, &block)
       end
+
+      class TimeoutError     < ::Timeout::Error ; end
+      class ReadTimeoutError < ::Timeout::Error ; end
 
     end
   end

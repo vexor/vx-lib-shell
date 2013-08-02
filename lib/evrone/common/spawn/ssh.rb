@@ -50,12 +50,9 @@ module Evrone
           end
 
           timeout_error ?
-            raise(TimeoutError, "#{command} execution expired") :
+            raise(Spawn::TimeoutError, "#{command} execution expired") :
             exit_code || -1 # nil exit_code means that the process is killed
         end
-
-        class TimeoutError < ::Timeout::Error ; end
-        class ReadTimeoutError < TimeoutError ; end
 
         private
 

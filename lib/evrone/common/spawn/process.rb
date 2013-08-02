@@ -44,12 +44,9 @@ module Evrone
           exit_code = status.exitstatus
 
           timeout_error ?
-            raise(TimeoutError, "#{cmd} execution expired") :
-            exit_code || (termsig && termsig * -1)
+            raise(Spawn::TimeoutError, "#{cmd} execution expired") :
+            exit_code || (termsig && termsig * -1) || 0
         end
-
-        class TimeoutError < ::Timeout::Error ; end
-        class ReadTimeoutError < TimeoutError ; end
 
       end
     end

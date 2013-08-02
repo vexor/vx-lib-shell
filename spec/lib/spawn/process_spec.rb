@@ -29,7 +29,7 @@ describe Evrone::Common::Spawn::Process do
   it 'run command with timeout' do
     expect {
       run("echo $USER && sleep 2", timeout: 1)
-    }.to raise_error(described_class.const_get :TimeoutError)
+    }.to raise_error(Evrone::Common::Spawn::TimeoutError)
     expect(subject).to eq "#{user}\n"
   end
 
