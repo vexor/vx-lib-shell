@@ -81,7 +81,7 @@ describe Evrone::Common::Spawn::SSH, ssh: true do
   end
 
   def open_ssh(&block)
-    described_class.open(host, user, password: pass, verbose: 1, &block)
+    described_class.open(host, user, password: pass, verbose: 2, &block)
   end
 
   def re(s)
