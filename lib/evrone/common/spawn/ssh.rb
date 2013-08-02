@@ -38,25 +38,33 @@ module Evrone
             exit_code = data.read_long
           end
 
-          @ssh.loop Spawn.pool_interval do
-            if read_timeout.happened? || timeout.happened?
-              false
-            else
-              channel.active?
-            end
-          end
+          pool channel, timeout, read_timeout
 
-          case
-          when read_timeout.happened?
-            raise Spawn::ReadTimeoutError.new command, read_timeout.value
-          when timeout.happened?
-            raise Spawn::TimeoutError.new command, timeout.value
-          else
-            exit_code || -1 # nil exit_code means that the process is killed
-          end
+          compute_exit_code command, exit_code, timeout, read_timeout
         end
 
         private
+
+          def pool(channel, timeout, read_timeout)
+            @ssh.loop Spawn.pool_interval do
+              if read_timeout.happened? || timeout.happened?
+                false
+              else
+                channel.active?
+              end
+            end
+          end
+
+          def compute_exit_code(command, exit_code, timeout, read_timeout)
+            case
+            when read_timeout.happened?
+              raise Spawn::ReadTimeoutError.new command, read_timeout.value
+            when timeout.happened?
+              raise Spawn::TimeoutError.new command, timeout.value
+            else
+              exit_code || -1 # nil exit_code means that the process is killed
+            end
+          end
 
           def spawn_channel(env, command, read_timeout, &block)
 

@@ -7,7 +7,7 @@ module Evrone
 
         extend self
 
-        def spawn(*args)
+        def spawn(*args, &block)
           env     = args.first.is_a?(Hash) ? args.shift : {}
           options = args.last.is_a?(Hash)  ? args.pop   : {}
           cmd     = args.join(" ")
@@ -22,36 +22,46 @@ module Evrone
           pid = ::Process.spawn(env, cmd, options.merge(out: w, err: w))
           w.close
 
-          read_timeout.reset
-          loop do
-            break if timeout.happened?
-
-            rs, _, _ = IO.select([r], nil, nil, select_timeout)
-
-            if rs
-              break if rs[0].eof?
-              yield rs[0].readpartial(8192)
-              read_timeout.reset
-            else
-              break if read_timeout.happened?
-            end
-          end
+          read_loop r, timeout, read_timeout, select_timeout, &block
 
           ::Process.kill 'KILL', pid
           _, status = ::Process.wait2(pid) # protect from zombies
 
-          case
-          when read_timeout.happened?
-            raise Spawn::ReadTimeoutError.new cmd, read_timeout.value
-          when timeout.happened?
-            raise Spawn::TimeoutError.new cmd, timeout.value
-          else
-            termsig   = status.termsig
-            exit_code = status.exitstatus
-            exit_code || (termsig && termsig * -1) || -1
+          compute_exit_code cmd, status, timeout, read_timeout
+        end
+
+        private
+
+          def compute_exit_code(command, status, timeout, read_timeout)
+            case
+            when read_timeout.happened?
+              raise Spawn::ReadTimeoutError.new command, read_timeout.value
+            when timeout.happened?
+              raise Spawn::TimeoutError.new command, timeout.value
+            else
+              termsig   = status.termsig
+              exit_code = status.exitstatus
+              exit_code || (termsig && termsig * -1) || -1
+            end
           end
 
-        end
+          def read_loop(reader, timeout, read_timeout, interval, &block)
+            read_timeout.reset
+
+            loop do
+              break if timeout.happened?
+
+              rs, _, _ = IO.select([reader], nil, nil, interval)
+
+              if rs
+                break if rs[0].eof?
+                yield rs[0].readpartial(8192)
+                read_timeout.reset
+              else
+                break if read_timeout.happened?
+              end
+            end
+          end
 
       end
     end

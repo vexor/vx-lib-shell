@@ -1,7 +1,6 @@
 # Evrone::Common::Spawn
 
-This gem helps to spawn system, ssh processes, capturing output in realtime,
-allow to set temeouts and read timeouts.
+TODO: Write a gem description
 
 ## Installation
 
@@ -19,50 +18,7 @@ Or install it yourself as:
 
 ## Usage
 
-Spawn system processes example:
-
-```ruby
-
-include Evrone::Common::Spawn
-
-spawn "ls -la" do |output|
-  print output
-  # prints directory listing
-end
-
-spawn({'ENV_VAR' => 'VALUE'}, "echo $VALUE", timeout: 10) do |output|
-  print output
-  #  its print "VALUE\n"
-end
-```
-
-Spawn remote processes example:
-
-```ruby
-open_ssh('localhost', 'user') do |ssh|
-  ssh.spawn("ls -la") do |output|
-    print output
-    # prints directory listing
-  end
-
-  spawn({'ENV_VAR' => 'VALUE'}, "echo $VALUE", read_timeout: 10) do |output|
-    print output
-    #  its print "VALUE\n"
-  end
-end
-
-```
-
-#### Timeouts
-
-When timeout happened, spawn raises ```Evrone::Common::Spawn::TimeoutError``` or
-```Evrone::Common::Spawn::ReadTimeoutError```, both exception classes inherited
-from Timeout::Error
-
-#### Return values
-
-Both ```spawn``` methods return process exit code, if process was killed by signal, for example
-KILL or INT, return negative signal number (for KILL was -9)
+TODO: Write usage instructions here
 
 ## Contributing
 
