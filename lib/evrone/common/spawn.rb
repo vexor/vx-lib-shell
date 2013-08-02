@@ -5,7 +5,7 @@ module Evrone
     module Spawn
 
       autoload :Process, File.expand_path("../spawn/process", __FILE__)
-      autoload :SSH,     File.expand_path("../spawn/process", __FILE__)
+      autoload :SSH,     File.expand_path("../spawn/ssh",     __FILE__)
 
       def open_ssh(*args, &block)
       end

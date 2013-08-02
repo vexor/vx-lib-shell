@@ -4,13 +4,10 @@ require 'timeout'
 module Evrone
   module Common
     module Spawn
-      module SSH
+      class SSH
 
         class << self
           def open(host, user, options = {}, &block)
-            user ||= ENV['SSH_USER']
-            host ||= ENV['SSH_HOST']
-
             ::Net::SSH.start(host, user, {
               forward_agent: true,
               paranoid:      false
@@ -44,17 +41,17 @@ module Evrone
           end
 
           @ssh.loop pool_timeout do
-            channel.active?
-
             if time_end && Time.now > time_end
               timeout_error = true
               false
+            else
+              channel.active?
             end
           end
 
           timeout_error ?
-            raise(TimeoutError, "#{cmd} execution expired") :
-            exit_code
+            raise(TimeoutError, "#{command} execution expired") :
+            exit_code || -1 # nil exit_code means that the process is killed
         end
 
         class TimeoutError < ::Timeout::Error ; end
@@ -66,7 +63,9 @@ module Evrone
             @ssh.open_channel do |channel|
 
               env.each do |k, v|
-                channel.env k, v
+                channel.env k, v do |_, success|
+                  yield "FAILED: couldn't execute command (ssh.channel.env)\n" if block_given?
+                end
               end
 
               channel.exec command do |_, success|
