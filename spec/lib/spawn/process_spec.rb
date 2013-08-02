@@ -25,6 +25,12 @@ describe Evrone::Common::Spawn::Process do
     expect(subject).to eq "BAR\n"
   end
 
+  it 'run command with timeout successfuly' do
+    code = run( {'FOO' => "BAR" }, "echo $FOO && sleep 1", timeout: 2)
+    expect(subject).to eq "BAR\n"
+    expect(code).to eq 0
+  end
+
   it 'run and kill process' do
     code = run( "echo $HOME; kill -KILL $$")
     expect(subject).to eq "#{ENV['HOME']}\n"

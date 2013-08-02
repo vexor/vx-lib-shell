@@ -31,7 +31,7 @@ module Evrone
               yield rs[0].readpartial(8192)
             end
 
-            if time_end && time_end > Time.now
+            if time_end && Time.now > time_end
               timeout_error = true
               break
             end

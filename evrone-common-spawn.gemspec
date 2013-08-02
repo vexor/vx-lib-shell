@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Evrone::Common::Spawn::VERSION
   spec.authors       = ["Dmitry Galinsky"]
   spec.email         = ["dima.exe@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{ later }
+  spec.summary       = %q{ later }
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency     "net-ssh", "~> 2.6"
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
