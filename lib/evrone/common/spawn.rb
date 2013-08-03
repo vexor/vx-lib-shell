@@ -12,12 +12,14 @@ module Evrone
       autoload :ReadTimeoutError, File.expand_path("../spawn/error",        __FILE__)
 
       class << self
+        @@pool_interval = 0.1
+
         def pool_interval
-          @pool_interval ||= 0.1
+          @@pool_interval
         end
 
         def pool_interval=(val)
-          @pool_interval = val
+          @@pool_interval = val
         end
       end
 
