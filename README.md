@@ -1,7 +1,7 @@
 # Evrone::Common::Spawn
 
 This gem helps to spawn processes in a shell capturing output in realtime.
-It also allows to set or read the temeouts.
+It also allows to set the temeouts.
 
 * [![Build Status](https://travis-ci.org/evrone/evrone-common-spawn.png)](https://travis-ci.org/evrone/evrone-common-spawn)
 * [![Code Climate](https://codeclimate.com/github/evrone/evrone-common-spawn.png)](https://codeclimate.com/github/evrone/evrone-common-spawn)
