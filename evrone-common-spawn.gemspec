@@ -8,10 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Evrone::Common::Spawn::VERSION
   spec.authors       = ["Dmitry Galinsky"]
   spec.email         = ["dima.exe@gmail.com"]
-  spec.description   = %q{ Spawn system, ssh processes, capturing output in realtime,
-allow to set temeouts and read timeouts }
-  spec.summary       = %q{ This gem helps to spawn system, ssh processes, capturing output in realtime,
-allow to set temeouts and read timeouts }
+  spec.description   = %q{ Spawn processes in a shell capturing output in realtime. It also allows to set or read the temeouts. }
+  spec.summary       = %q{ This gem helps to spawn processes in a shell capturing output in realtime. It also allows to set or read the temeouts. }
   spec.homepage      = "https://github.com/evrone/evrone-common-spawn"
   spec.license       = "MIT"
 
