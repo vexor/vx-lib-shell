@@ -1,7 +1,7 @@
 # Evrone::Common::Spawn
 
-This gem helps to spawn system, ssh processes, capturing output in realtime,
-allow to set temeouts and read timeouts.
+This gem helps to spawn processes in a shell capturing output in realtime.
+It also allows to set or read the temeouts.
 
 * [![Build Status](https://travis-ci.org/evrone/evrone-common-spawn.png)](https://travis-ci.org/evrone/evrone-common-spawn)
 * [![Code Climate](https://codeclimate.com/github/evrone/evrone-common-spawn.png)](https://codeclimate.com/github/evrone/evrone-common-spawn)
@@ -16,17 +16,17 @@ Add this line to your application's Gemfile:
 
     gem 'evrone-common-spawn'
 
-And then execute:
+And then execute the bundler:
 
     $ bundle
 
-Or install it yourself as:
+Or install it via `gem` command:
 
     $ gem install evrone-common-spawn
 
 ## Quick Start
 
-Below is a small snippet that demonstrates how to use
+The following snippet demonstrates the usage:
 
 ```ruby
 # Spawn system processes example
@@ -64,14 +64,14 @@ end
 
 ### Timeouts
 
-When timeout happened, spawn raises ```Evrone::Common::Spawn::TimeoutError``` or
-```Evrone::Common::Spawn::ReadTimeoutError```, both exception classes inherited
+When a timeout is reached spawn raises ```Evrone::Common::Spawn::TimeoutError``` or
+```Evrone::Common::Spawn::ReadTimeoutError```. Both exceptions inherit
 from Timeout::Error
 
 ### Return values
 
-Both ```spawn``` methods return process exit code, if process was killed by signal, for example
-KILL or INT, return negative signal number (for KILL was -9)
+Both ```spawn``` methods return process exit code. If a process was terminated by a signal, for example
+KILL or INT, the methods return negative number identical to a signal number (-9 for KILL, etc.)
 
 ## Contributing
 
