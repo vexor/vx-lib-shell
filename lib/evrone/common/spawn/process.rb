@@ -55,7 +55,7 @@ module Evrone
 
               if rs
                 break if rs[0].eof?
-                yield rs[0].readpartial(8192)
+                yield rs[0].readpartial(8192) if block_given?
                 read_timeout.reset
               else
                 break if read_timeout.happened?
