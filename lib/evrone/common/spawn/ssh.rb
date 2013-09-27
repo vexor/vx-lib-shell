@@ -9,7 +9,6 @@ module Evrone
         class << self
           def open(host, user, options = {}, &block)
             ::Net::SSH.start(host, user, {
-              forward_agent: true,
               paranoid:      false
             }.merge(options)) do |ssh|
               yield new(ssh)
