@@ -9,4 +9,5 @@ before_script:
   - export SSH_USER=travis
   - export SSH_PASS=travis
   - export SSH_HOST=localhost
+  - export SSH_PORT=22
 script: bundle exec rake SPEC_OPTS='-fd --color --order=rand'

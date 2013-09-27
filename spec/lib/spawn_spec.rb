@@ -13,9 +13,14 @@ describe Evrone::Common::Spawn do
   end
 
   context "open_ssh" do
+    let(:user) { ENV['SSH_USER'] || 'vagrant' }
+    let(:host) { ENV['SSH_HOST'] || 'localhost' }
+    let(:pass) { ENV['SSH_PASS'] || 'vagrant' }
+    let(:port) { ENV['SSH_PORT'] || 2222 }
     let(:ssh) { nil }
+
     it "should be" do
-      subject.open_ssh(ENV['SSH_HOST'], ENV['SSH_USER'], password: ENV['SSH_PASS']) do |ssh|
+      subject.open_ssh(host, user, password: pass, port: port) do |ssh|
         expect(ssh.spawn 'true').to eq 0
       end
     end

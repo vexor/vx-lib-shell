@@ -3,9 +3,10 @@ require 'timeout'
 
 describe Evrone::Common::Spawn::SSH, ssh: true do
 
-  let(:user) { ENV['SSH_USER'] }
-  let(:host) { ENV['SSH_HOST'] }
-  let(:pass) { ENV['SSH_PASS'] }
+  let(:user) { ENV['SSH_USER'] || 'vagrant' }
+  let(:host) { ENV['SSH_HOST'] || 'localhost' }
+  let(:pass) { ENV['SSH_PASS'] || 'vagrant' }
+  let(:port) { ENV['SSH_PORT'] || 2222 }
   let(:collected) { '' }
 
   it "run command successfuly" do
@@ -21,8 +22,24 @@ describe Evrone::Common::Spawn::SSH, ssh: true do
   end
 
   it "run command with env successfuly" do
-    code = run_ssh({'FOO' => "BAR"}, 'echo $FOO')
-    expect(collected).to match(re "FAILED: couldn't execute command (ssh.channel.env)")
+    code = run_ssh({'FOO' => "BAR"}, "sh -c 'echo $FOO'")
+    expect(collected).to eq "BAR\n"
+    expect(code).to eq 0
+  end
+
+  it "run command with chdir successfuly" do
+    code = run_ssh("echo $(pwd)", chdir: "/tmp")
+    expect(collected).to eq "/tmp\n"
+    expect(code).to eq 0
+  end
+
+  it "run command with chdir and env successfuly" do
+    code = run_ssh(
+      {'FOO' => "BAR"},
+      "sh -c 'echo $FOO' ; echo $(pwd)",
+      chdir: '/tmp'
+    )
+    expect(collected).to eq "BAR\n/tmp\n"
     expect(code).to eq 0
   end
 
@@ -81,7 +98,7 @@ describe Evrone::Common::Spawn::SSH, ssh: true do
   end
 
   def open_ssh(&block)
-    described_class.open(host, user, password: pass, verbose: 2, &block)
+    described_class.open(host, user, password: pass, paranoid: false, verbose: 2, port: port, &block)
   end
 
   def re(s)

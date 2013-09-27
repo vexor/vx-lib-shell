@@ -17,10 +17,10 @@ module Evrone
           end
         end
 
-        attr_reader :host, :user, :options
+        attr_reader :host, :user, :options, :connection
 
         def initialize(ssh)
-          @ssh = ssh
+          @connection = ssh
         end
 
         def spawn(*args, &block)
@@ -32,7 +32,8 @@ module Evrone
           timeout       = Spawn::Timeout.new options.delete(:timeout)
           read_timeout  = Spawn::ReadTimeout.new options.delete(:read_timeout)
 
-          channel = spawn_channel env, command, read_timeout, &block
+          command = build_command(env, command, options)
+          channel = spawn_channel command, read_timeout, &block
 
           channel.on_request("exit-status") do |_,data|
             exit_code = data.read_long
@@ -45,8 +46,21 @@ module Evrone
 
         private
 
+          def build_command(env, command, options)
+            cmd = command
+            unless env.empty?
+              e = env.map{|k,v| "#{k}=#{v}" }.join(" ")
+              cmd = "env #{e} #{cmd}"
+            end
+            if options.key?(:chdir)
+              e = "cd #{options[:chdir]}"
+              cmd = "#{e} ; #{cmd}"
+            end
+            cmd
+          end
+
           def pool(channel, timeout, read_timeout)
-            @ssh.loop Spawn.pool_interval do
+            @connection.loop Spawn.pool_interval do
               if read_timeout.happened? || timeout.happened?
                 false
               else
@@ -66,16 +80,16 @@ module Evrone
             end
           end
 
-          def spawn_channel(env, command, read_timeout, &block)
+          def spawn_channel(command, read_timeout, &block)
 
-            @ssh.open_channel do |channel|
+            @connection.open_channel do |channel|
               read_timeout.reset
 
-              env.each do |k, v|
-                channel.env k, v do |_, success|
-                  yield "FAILED: couldn't execute command (ssh.channel.env)\n" if block_given?
-                end
-              end
+              #env.each do |k, v|
+              #  channel.env k, v do |_, success|
+              #    yield "FAILED: couldn't execute command (ssh.channel.env)\n" if block_given?
+              #  end
+              #end
 
               channel.exec command do |_, success|
 
