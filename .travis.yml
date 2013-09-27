@@ -1,7 +1,6 @@
 rvm:
   - 1.9.3
   - 2.0.0
-  - jruby-19mode
 before_install:
   - echo 'travis:travis' | sudo chpasswd
   - echo 'PasswordAuthentication yes' | sudo tee -a /etc/ssh/sshd_config
