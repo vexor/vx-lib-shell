@@ -51,7 +51,7 @@ describe Evrone::Common::Spawn::SSH, ssh: true do
     end
 
     it 'run command with timeout successfuly' do
-      code = run_ssh('echo $USER; sleep 0.2', timeout: 0.5)
+      code = run_ssh('echo $USER; sleep 0.2', timeout: 1)
       expect(collected).to eq "#{user}\n"
       expect(code).to eq 0
     end

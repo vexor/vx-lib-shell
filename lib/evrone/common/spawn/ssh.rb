@@ -45,6 +45,10 @@ module Evrone
 
         private
 
+          def normalize_nl(str)
+            str.gsub(/\r\n?/, "\n")
+          end
+
           def build_command(env, command, options)
             cmd = command
             unless env.empty?
@@ -80,30 +84,28 @@ module Evrone
           end
 
           def spawn_channel(command, read_timeout, &block)
-
             @connection.open_channel do |channel|
-              read_timeout.reset
 
-              #env.each do |k, v|
-              #  channel.env k, v do |_, success|
-              #    yield "FAILED: couldn't execute command (ssh.channel.env)\n" if block_given?
-              #  end
-              #end
+              channel.request_pty do |_, pty_status|
+                raise StandardError, "could not obtain pty" unless pty_status
 
-              channel.exec command do |_, success|
+                read_timeout.reset
 
-                unless success
-                  yield "FAILED: couldn't execute command (ssh.channel.exec)\n" if block_given?
-                end
+                channel.exec command do |_, success|
 
-                channel.on_data do |_, data|
-                  yield data if block_given?
-                  read_timeout.reset
-                end
+                  unless success
+                    yield "FAILED: couldn't execute command (ssh.channel.exec)\n" if block_given?
+                  end
 
-                channel.on_extended_data do |_, _, data|
-                  yield data if block_given?
-                  read_timeout.reset
+                  channel.on_data do |_, data|
+                    yield normalize_nl(data) if block_given?
+                    read_timeout.reset
+                  end
+
+                  channel.on_extended_data do |_, _, data|
+                    yield normalize_nl(data) if block_given?
+                    read_timeout.reset
+                  end
                 end
               end
             end
