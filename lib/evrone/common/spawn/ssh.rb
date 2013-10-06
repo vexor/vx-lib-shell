@@ -86,8 +86,8 @@ module Evrone
           def spawn_channel(command, read_timeout, &block)
             @connection.open_channel do |channel|
 
-              channel.request_pty do |_, pty_status|
-                raise StandardError, "could not obtain pty" unless pty_status
+              #channel.request_pty do |_, pty_status|
+              #  raise StandardError, "could not obtain pty" unless pty_status
 
                 read_timeout.reset
 
@@ -107,7 +107,7 @@ module Evrone
                     read_timeout.reset
                   end
                 end
-              end
+              #end
             end
 
           end
