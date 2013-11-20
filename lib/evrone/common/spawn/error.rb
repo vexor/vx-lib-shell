@@ -12,7 +12,7 @@ module Evrone
         end
 
         def to_s
-          "Execution of '#{@cmd}' expired"
+          "Execution expired, command did not finish within #{@seconds} seconds"
         end
 
       end
@@ -25,7 +25,7 @@ module Evrone
         end
 
         def to_s
-          "No output has been received of '#{@cmd}' in the last #{@seconds} seconds"
+          "No output has been received in the last #{@seconds} seconds"
         end
       end
 
