@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'timeout'
 
-describe Evrone::Common::Spawn::Process do
+describe Vx::Common::Spawn::Process do
   let(:collected) { "" }
   let(:user)      { ENV['USER'] }
 
@@ -29,7 +29,7 @@ describe Evrone::Common::Spawn::Process do
     it 'run command with timeout' do
       expect {
         run("echo $USER && sleep 0.5", timeout: 0.2)
-      }.to raise_error(Evrone::Common::Spawn::TimeoutError)
+      }.to raise_error(Vx::Common::Spawn::TimeoutError)
       expect(subject).to eq "#{user}\n"
     end
 
@@ -44,14 +44,14 @@ describe Evrone::Common::Spawn::Process do
     it 'run command with read timeout' do
       expect{
         run('sleep 0.5', read_timeout: 0.2)
-      }.to raise_error(Evrone::Common::Spawn::ReadTimeoutError)
+      }.to raise_error(Vx::Common::Spawn::ReadTimeoutError)
       expect(collected).to eq ""
     end
 
     it 'run command with read timeout in loop' do
       expect{
         run('sleep 0.1 ; echo $USER ; sleep 0.5', read_timeout: 0.3)
-      }.to raise_error(Evrone::Common::Spawn::ReadTimeoutError)
+      }.to raise_error(Vx::Common::Spawn::ReadTimeoutError)
       expect(collected).to eq "#{user}\n"
     end
 

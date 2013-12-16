@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in evrone-common-spawn.gemspec
+# Specify your gem's dependencies in vx-common-spawn.gemspec
 gemspec

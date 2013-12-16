@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Evrone::Common::Spawn do
+describe Vx::Common::Spawn do
 
   subject { Object.new }
 

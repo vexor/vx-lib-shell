@@ -1,4 +1,4 @@
-module Evrone
+module Vx
   module Common
     module Spawn
       class Timeout

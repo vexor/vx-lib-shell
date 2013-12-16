@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Evrone::Common::Spawn::ReadTimeout do
+describe Vx::Common::Spawn::ReadTimeout do
   subject { described_class.new 0.2 }
 
   context "just created" do

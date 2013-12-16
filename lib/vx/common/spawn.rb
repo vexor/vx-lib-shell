@@ -1,6 +1,6 @@
 require File.expand_path("../spawn/version", __FILE__)
 
-module Evrone
+module Vx
   module Common
     module Spawn
 

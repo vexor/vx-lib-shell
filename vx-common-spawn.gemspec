@@ -1,16 +1,16 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'evrone/common/spawn/version'
+require 'vx/common/spawn/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "evrone-common-spawn"
-  spec.version       = Evrone::Common::Spawn::VERSION
+  spec.name          = "vx-common-spawn"
+  spec.version       = Vx::Common::Spawn::VERSION
   spec.authors       = ["Dmitry Galinsky"]
   spec.email         = ["dima.exe@gmail.com"]
   spec.description   = %q{ Spawn processes in a shell capturing output in realtime. It also allows to set the temeouts. }
   spec.summary       = %q{ This gem helps to spawn processes in a shell capturing output in realtime. It also allows to set the temeouts. }
-  spec.homepage      = "https://github.com/evrone/evrone-common-spawn"
+  spec.homepage      = "https://github.com/vextor/vx-common-spawn"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)

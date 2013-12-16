@@ -1,6 +1,6 @@
 require 'timeout'
 
-module Evrone
+module Vx
   module Common
     module Spawn
       module Process

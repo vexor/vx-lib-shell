@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'timeout'
 
-describe Evrone::Common::Spawn::SSH, ssh: true do
+describe Vx::Common::Spawn::SSH, ssh: true do
 
   let(:user) { ENV['SSH_USER'] || 'vagrant' }
   let(:host) { ENV['SSH_HOST'] || 'localhost' }
@@ -47,7 +47,7 @@ describe Evrone::Common::Spawn::SSH, ssh: true do
     it 'run command with timeout' do
       expect{
         run_ssh('echo $USER; sleep 0.5', timeout: 0.2)
-      }.to raise_error(Evrone::Common::Spawn::TimeoutError)
+      }.to raise_error(Vx::Common::Spawn::TimeoutError)
     end
 
     it 'run command with timeout successfuly' do
@@ -61,14 +61,14 @@ describe Evrone::Common::Spawn::SSH, ssh: true do
     it 'run command with read timeout' do
       expect{
         run_ssh('sleep 0.5', read_timeout: 0.2)
-      }.to raise_error(Evrone::Common::Spawn::ReadTimeoutError)
+      }.to raise_error(Vx::Common::Spawn::ReadTimeoutError)
       expect(collected).to eq ""
     end
 
     it 'run command with read timeout in loop' do
       expect{
         run_ssh('sleep 0.1 ; echo $USER ; sleep 0.5', read_timeout: 0.3)
-      }.to raise_error(Evrone::Common::Spawn::ReadTimeoutError)
+      }.to raise_error(Vx::Common::Spawn::ReadTimeoutError)
       expect(collected).to eq "#{user}\n"
     end
 

@@ -1,4 +1,4 @@
-module Evrone
+module Vx
   module Common
     module Spawn
       VERSION = "0.0.7"

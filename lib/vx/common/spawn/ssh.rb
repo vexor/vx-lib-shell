@@ -1,7 +1,7 @@
 require 'net/ssh'
 require 'timeout'
 
-module Evrone
+module Vx
   module Common
     module Spawn
       class SSH

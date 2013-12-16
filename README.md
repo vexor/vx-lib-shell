@@ -1,10 +1,7 @@
-# Evrone::Common::Spawn
+# Vx::Common::Spawn
 
 This gem helps to spawn processes in a shell capturing output in realtime.
 It also allows to set the temeouts.
-
-* [![Build Status](https://travis-ci.org/evrone/evrone-common-spawn.png)](https://travis-ci.org/evrone/evrone-common-spawn)
-* [![Code Climate](https://codeclimate.com/github/evrone/evrone-common-spawn.png)](https://codeclimate.com/github/evrone/evrone-common-spawn)
 
 ## Requirements
 
@@ -14,7 +11,7 @@ MRI 1.9.3 or 2.0.0.
 
 Add this line to your application's Gemfile:
 
-    gem 'evrone-common-spawn'
+    gem 'vx-common-spawn'
 
 And then execute the bundler:
 
@@ -22,7 +19,7 @@ And then execute the bundler:
 
 Or install it via `gem` command:
 
-    $ gem install evrone-common-spawn
+    $ gem install vx-common-spawn
 
 ## Quick Start
 
@@ -31,7 +28,7 @@ The following snippet demonstrates the usage:
 ```ruby
 # Spawn system processes example
 
-include Evrone::Common::Spawn
+include Vx::Common::Spawn
 
 spawn "ls -la" do |output|
   print output
@@ -64,8 +61,8 @@ end
 
 ### Timeouts
 
-When a timeout is reached spawn raises ```Evrone::Common::Spawn::TimeoutError``` or
-```Evrone::Common::Spawn::ReadTimeoutError```. Both exceptions inherit
+When a timeout is reached spawn raises ```Vx::Common::Spawn::TimeoutError``` or
+```Vx::Common::Spawn::ReadTimeoutError```. Both exceptions inherit
 from Timeout::Error
 
 ### Return values
