@@ -32,7 +32,7 @@ module Vx
           read_timeout  = Spawn::ReadTimeout.new options.delete(:read_timeout)
 
           command = build_command(env, command, options)
-          channel = spawn_channel command, read_timeout, &block
+          channel = spawn_channel command, read_timeout, options, &block
 
           channel.on_request("exit-status") do |_,data|
             exit_code = data.read_long
@@ -45,8 +45,15 @@ module Vx
 
         private
 
-          def normalize_nl(str)
-            str.gsub(/\r\n?/, "\n")
+          def request_pty(channel, options)
+            if options[:pty]
+              channel.request_pty do |_, pty_status|
+                raise StandardError, "could not obtain pty" unless pty_status
+                yield if block_given?
+              end
+            else
+              yield if block_given?
+            end
           end
 
           def build_command(env, command, options)
@@ -83,11 +90,10 @@ module Vx
             end
           end
 
-          def spawn_channel(command, read_timeout, &block)
+          def spawn_channel(command, read_timeout, options, &block)
             @connection.open_channel do |channel|
 
-              #channel.request_pty do |_, pty_status|
-              #  raise StandardError, "could not obtain pty" unless pty_status
+              request_pty channel, options do
 
                 read_timeout.reset
 
@@ -98,16 +104,17 @@ module Vx
                   end
 
                   channel.on_data do |_, data|
-                    yield normalize_nl(data) if block_given?
+                    yield data if block_given?
                     read_timeout.reset
                   end
 
                   channel.on_extended_data do |_, _, data|
-                    yield normalize_nl(data) if block_given?
+                    yield data if block_given?
                     read_timeout.reset
                   end
                 end
-              #end
+
+              end
             end
 
           end

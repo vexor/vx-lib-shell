@@ -15,6 +15,12 @@ describe Vx::Common::Spawn::SSH, ssh: true do
     expect(code).to eq 0
   end
 
+  it "run command successfuly with pty" do
+    code = run_ssh 'env', pty: true
+    expect(collected).to match(/SSH_TTY=/)
+    expect(code).to eq 0
+  end
+
   it "run command with error" do
     code = run_ssh 'false'
     expect(collected).to eq ""
