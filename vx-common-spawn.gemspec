@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["dima.exe@gmail.com"]
   spec.description   = %q{ Spawn processes in a shell capturing output in realtime. It also allows to set the temeouts. }
   spec.summary       = %q{ This gem helps to spawn processes in a shell capturing output in realtime. It also allows to set the temeouts. }
-  spec.homepage      = "https://github.com/vextor/vx-common-spawn"
+  spec.homepage      = "https://github.com/vexor/vx-common-spawn"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
