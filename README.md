@@ -35,7 +35,7 @@ spawn "ls -la" do |output|
   # prints directory listing
 end
 
-spawn({'ENV_VAR' => 'VALUE'}, "echo $VALUE", timeout: 10) do |output|
+spawn({'ENV_VAR' => 'VALUE'}, "echo $ENV_VAR", timeout: 10) do |output|
   print output
   #  its print "VALUE\n"
 end
@@ -51,7 +51,7 @@ open_ssh('localhost', 'user') do |ssh|
     # prints directory listing
   end
 
-  spawn({'ENV_VAR' => 'VALUE'}, "echo $VALUE", read_timeout: 10) do |output|
+  spawn({'ENV_VAR' => 'VALUE'}, "echo $ENV_VAR", read_timeout: 10) do |output|
     print output
     #  its print "VALUE\n"
   end
