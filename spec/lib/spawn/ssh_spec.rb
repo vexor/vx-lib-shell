@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'timeout'
 
-describe Vx::Common::Spawn::SSH, ssh: true do
+describe Vx::Lib::Spawn::SSH, ssh: true do
 
   let(:user) { ENV['SSH_USER'] || 'vagrant' }
   let(:host) { ENV['SSH_HOST'] || 'localhost' }
@@ -27,33 +27,11 @@ describe Vx::Common::Spawn::SSH, ssh: true do
     expect(code).to eq 1
   end
 
-  it "run command with env successfuly" do
-    code = run_ssh({'FOO' => "BAR"}, "sh -c 'echo $FOO'")
-    expect(collected).to eq "BAR\n"
-    expect(code).to eq 0
-  end
-
-  it "run command with chdir successfuly" do
-    code = run_ssh("echo $(pwd)", chdir: "/tmp")
-    expect(collected).to eq "/tmp\n"
-    expect(code).to eq 0
-  end
-
-  it "run command with chdir and env successfuly" do
-    code = run_ssh(
-      {'FOO' => "BAR"},
-      "sh -c 'echo $FOO' ; echo $(pwd)",
-      chdir: '/tmp'
-    )
-    expect(collected).to eq "BAR\n/tmp\n"
-    expect(code).to eq 0
-  end
-
   context "timeout" do
     it 'run command with timeout' do
       expect{
         run_ssh('echo $USER; sleep 0.5', timeout: 0.2)
-      }.to raise_error(Vx::Common::Spawn::TimeoutError)
+      }.to raise_error(Vx::Lib::Spawn::TimeoutError)
     end
 
     it 'run command with timeout successfuly' do
@@ -67,14 +45,14 @@ describe Vx::Common::Spawn::SSH, ssh: true do
     it 'run command with read timeout' do
       expect{
         run_ssh('sleep 0.5', read_timeout: 0.2)
-      }.to raise_error(Vx::Common::Spawn::ReadTimeoutError)
+      }.to raise_error(Vx::Lib::Spawn::ReadTimeoutError)
       expect(collected).to eq ""
     end
 
     it 'run command with read timeout in loop' do
       expect{
         run_ssh('sleep 0.1 ; echo $USER ; sleep 0.5', read_timeout: 0.3)
-      }.to raise_error(Vx::Common::Spawn::ReadTimeoutError)
+      }.to raise_error(Vx::Lib::Spawn::ReadTimeoutError)
       expect(collected).to eq "#{user}\n"
     end
 
@@ -94,13 +72,27 @@ describe Vx::Common::Spawn::SSH, ssh: true do
   it 'run and kill process' do
     code = run_ssh("echo $USER; kill -9 $$")
     expect(collected).to eq "#{user}\n"
-    expect(code).to eq(-1)
+    expect(code).to eq(-4)
   end
 
   it 'run and interupt process' do
     code = run_ssh("echo $USER; kill -9 $$")
     expect(collected).to eq "#{user}\n"
-    expect(code).to eq(-1)
+    expect(code).to eq(-4)
+  end
+
+  it "should copy stdin with pty" do
+    io = StringIO.new("echo foo ; exit 0\n")
+    code = run_ssh("/bin/sh", stdin: io, pty: true)
+    expect(collected).to match "foo\r\n"
+    expect(code).to eq 0
+  end
+
+  it "should copy stdin" do
+    io = StringIO.new("echo foo")
+    code = run_ssh("/bin/sh", stdin: io)
+    expect(collected).to match "foo\n"
+    expect(code).to eq 0
   end
 
   def open_ssh(&block)
@@ -122,7 +114,7 @@ describe Vx::Common::Spawn::SSH, ssh: true do
   end
 
   def timeout
-    Timeout.timeout(10) do
+    Timeout.timeout(3) do
       yield
     end
   end

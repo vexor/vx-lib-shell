@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Vx::Common::Spawn do
+describe Vx::Lib::Spawn do
 
   subject { Object.new }
 
@@ -17,7 +17,7 @@ describe Vx::Common::Spawn do
     let(:host) { ENV['SSH_HOST'] || 'localhost' }
     let(:pass) { ENV['SSH_PASS'] || 'vagrant' }
     let(:port) { ENV['SSH_PORT'] || 2222 }
-    let(:ssh) { nil }
+    let(:ssh)  { nil }
 
     it "should be" do
       subject.open_ssh(host, user, password: pass, port: port) do |ssh|

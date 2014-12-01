@@ -1,16 +1,16 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'vx/common/spawn/version'
+require 'vx/lib/spawn/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "vx-common-spawn"
-  spec.version       = Vx::Common::Spawn::VERSION
+  spec.name          = "vx-lib-spawn"
+  spec.version       = Vx::Lib::Spawn::VERSION
   spec.authors       = ["Dmitry Galinsky"]
-  spec.email         = ["dima.exe@gmail.com"]
+  spec.email         = ["dima@vexor.io"]
   spec.description   = %q{ Spawn processes in a shell capturing output in realtime. It also allows to set the temeouts. }
   spec.summary       = %q{ This gem helps to spawn processes in a shell capturing output in realtime. It also allows to set the temeouts. }
-  spec.homepage      = "https://github.com/vexor/vx-common-spawn"
+  spec.homepage      = "https://github.com/vexor/vx-lib-spawn"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)

@@ -1,5 +1,5 @@
 module Vx
-  module Common
+  module Lib
     module Spawn
       class Timeout
         def initialize(value)
@@ -11,7 +11,7 @@ module Vx
         end
 
         def happened?
-          return false unless value
+          return false unless @value
           return true if @happened
 
           @happened = Time.now > @time_end

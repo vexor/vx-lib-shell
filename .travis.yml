@@ -1,7 +1,7 @@
 rvm:
   - 1.9.3
-  - 2.0.0
-  - 2.1.0
+  - 2.0
+  - 2.1
 before_install:
   - echo 'travis:travis' | sudo chpasswd
   - echo 'PasswordAuthentication yes' | sudo tee -a /etc/ssh/sshd_config
@@ -11,4 +11,6 @@ before_script:
   - export SSH_PASS=travis
   - export SSH_HOST=localhost
   - export SSH_PORT=22
+  - env
+  - sudo -u postgres psql -c "select version()"
 script: bundle exec rake SPEC_OPTS='-fd --color --order=rand'
