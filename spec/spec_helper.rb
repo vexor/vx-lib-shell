@@ -1,5 +1,4 @@
-require 'rspec/autorun'
-require File.expand_path('../../lib/vx/common/spawn', __FILE__)
+require File.expand_path('../../lib/vx/lib/spawn', __FILE__)
 
 RSpec.configure do |c|
 end

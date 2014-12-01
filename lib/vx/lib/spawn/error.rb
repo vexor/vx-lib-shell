@@ -1,7 +1,7 @@
 require 'timeout'
 
 module Vx
-  module Common
+  module Lib
     module Spawn
 
       class TimeoutError < ::Timeout::Error

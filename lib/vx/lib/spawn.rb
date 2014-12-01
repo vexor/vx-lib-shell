@@ -1,7 +1,7 @@
 require File.expand_path("../spawn/version", __FILE__)
 
 module Vx
-  module Common
+  module Lib
     module Spawn
 
       autoload :Process,          File.expand_path("../spawn/process",      __FILE__)
@@ -12,7 +12,7 @@ module Vx
       autoload :ReadTimeoutError, File.expand_path("../spawn/error",        __FILE__)
 
       class << self
-        @@pool_interval = 0.1
+        @@pool_interval = 1.0
 
         def pool_interval
           @@pool_interval
@@ -24,11 +24,11 @@ module Vx
       end
 
       def open_ssh(*args, &block)
-        Common::Spawn::SSH.open(*args, &block)
+        Lib::Spawn::SSH.open(*args, &block)
       end
 
       def spawn(*args, &block)
-        Common::Spawn::Process.spawn(*args, &block)
+        Lib::Spawn::Process.spawn(*args, &block)
       end
 
     end

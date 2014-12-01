@@ -1,30 +1,30 @@
 require 'spec_helper'
 
-describe Vx::Common::Spawn::ReadTimeout do
+describe Vx::Lib::Spawn::ReadTimeout do
   subject { described_class.new 0.2 }
 
-  context "just created" do
-    its(:value)     { should eq 0.2 }
-    its(:happened?) { should be_false }
+  it "just created" do
+    expect(subject.value).to eq 0.2
+    expect(subject).to_not be_happened
   end
 
   it "should be work" do
     subject.reset
     sleep 0.1
-    expect(subject.happened?).to be_false
+    expect(subject).to_not be_happened
 
     subject.reset
     sleep 0.3
-    expect(subject.happened?).to be_true
+    expect(subject).to be_happened
   end
 
   it "do nothing unless value" do
-    expect(subject.happened?).to be_false
+    expect(subject).to_not be_happened
   end
 
   it "do nothing unless timeout" do
     subject.reset
     sleep 0.1
-    expect(subject.happened?).to be_false
+    expect(subject).to_not be_happened
   end
 end

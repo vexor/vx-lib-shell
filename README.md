@@ -1,17 +1,17 @@
-# Vx::Common::Spawn
+# Vx::Lib::Spawn
 
 This gem helps to spawn processes in a shell capturing output in realtime.
 It also allows to set the temeouts.
 
 ## Requirements
 
-MRI 1.9.3 or 2.0.0.
+MRI 1.9.3, 2.0.0, 2.1.x.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'vx-common-spawn'
+    gem 'vx-lib-spawn'
 
 And then execute the bundler:
 
@@ -19,28 +19,25 @@ And then execute the bundler:
 
 Or install it via `gem` command:
 
-    $ gem install vx-common-spawn
+    $ gem install vx-lib-spawn
 
 ## Quick Start
 
 The following snippet demonstrates the usage:
 
 ```ruby
-# Spawn system processes example
-
-include Vx::Common::Spawn
+include Vx::Lib::Spawn
 
 spawn "ls -la" do |output|
   print output
   # prints directory listing
 end
 
-spawn({'ENV_VAR' => 'VALUE'}, "echo $ENV_VAR", timeout: 10) do |output|
+spawn("echo value", timeout: 10) do |output|
   print output
-  #  its print "VALUE\n"
+  #  its print "value\n"
 end
 ```
-
 
 ```ruby
 # Spawn remote processes example
@@ -51,9 +48,9 @@ open_ssh('localhost', 'user') do |ssh|
     # prints directory listing
   end
 
-  spawn({'ENV_VAR' => 'VALUE'}, "echo $ENV_VAR", read_timeout: 10) do |output|
+  spawn("echo value", read_timeout: 10) do |output|
     print output
-    #  its print "VALUE\n"
+    #  its print "value\n"
   end
 end
 
@@ -61,8 +58,8 @@ end
 
 ### Timeouts
 
-When a timeout is reached spawn raises ```Vx::Common::Spawn::TimeoutError``` or
-```Vx::Common::Spawn::ReadTimeoutError```. Both exceptions inherit
+When a timeout is reached spawn raises ```Vx::Lib::Spawn::TimeoutError``` or
+```Vx::Lib::Spawn::ReadTimeoutError```. Both exceptions inherit
 from Timeout::Error
 
 ### Return values

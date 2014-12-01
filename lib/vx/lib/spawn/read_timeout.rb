@@ -1,11 +1,12 @@
 module Vx
-  module Common
+  module Lib
     module Spawn
       class ReadTimeout
 
         def initialize(val)
           @value    = val.to_f > 0 ? val.to_f : nil
           @happened = false
+          @tm       = nil
         end
 
         def reset

@@ -2,7 +2,7 @@ require 'net/ssh'
 require 'timeout'
 
 module Vx
-  module Common
+  module Lib
     module Spawn
       class SSH
 
@@ -22,20 +22,19 @@ module Vx
           @connection = ssh
         end
 
-        def spawn(*args, &block)
-          env     = args.first.is_a?(Hash) ? args.shift : {}
-          options = args.last.is_a?(Hash)  ? args.pop : {}
-          command = args.join(" ")
-
+        def spawn(command, options = {}, &block)
           exit_code     = nil
           timeout       = Spawn::Timeout.new options.delete(:timeout)
           read_timeout  = Spawn::ReadTimeout.new options.delete(:read_timeout)
 
-          command = build_command(env, command, options)
           channel = spawn_channel command, read_timeout, options, &block
 
           channel.on_request("exit-status") do |_,data|
             exit_code = data.read_long
+          end
+
+          channel.on_request("exit-signal") do |_,data|
+            exit_code = data.read_long * -1
           end
 
           pool channel, timeout, read_timeout
@@ -54,19 +53,6 @@ module Vx
             else
               yield if block_given?
             end
-          end
-
-          def build_command(env, command, options)
-            cmd = command
-            unless env.empty?
-              e = env.map{|k,v| "#{k}=#{v}" }.join(" ")
-              cmd = "env #{e} #{cmd}"
-            end
-            if options.key?(:chdir)
-              e = "cd #{options[:chdir]}"
-              cmd = "#{e} ; #{cmd}"
-            end
-            cmd
           end
 
           def pool(channel, timeout, read_timeout)
@@ -112,8 +98,13 @@ module Vx
                     yield data if block_given?
                     read_timeout.reset
                   end
-                end
 
+                  if i = options[:stdin]
+                    channel.send_data i.read
+                    channel.eof!
+                  end
+
+                end
               end
             end
 
