@@ -1,7 +1,8 @@
 require 'spec_helper'
 require 'timeout'
+require 'net/ssh'
 
-describe Vx::Lib::Spawn::SSH, ssh: true do
+describe Vx::Lib::Shell::SSH, ssh: true do
 
   let(:user) { ENV['SSH_USER'] || 'vagrant' }
   let(:host) { ENV['SSH_HOST'] || 'localhost' }
@@ -9,14 +10,19 @@ describe Vx::Lib::Spawn::SSH, ssh: true do
   let(:port) { ENV['SSH_PORT'] || 2222 }
   let(:collected) { '' }
 
-  it "run command successfuly" do
-    code = run_ssh 'echo $USER'
-    expect(collected).to eq "#{user}\n"
-    expect(code).to eq 0
+  def conn
+    @conn ||=
+      Net::SSH.start(
+        host, user, {
+          password: pass,
+          port:     port,
+          verbose:  2
+        }
+      )
   end
 
   it "run command successfuly with pty" do
-    code = run_ssh 'env', pty: true
+    code = run_ssh 'env'
     expect(collected).to match(/SSH_TTY=/)
     expect(code).to eq 0
   end
@@ -31,12 +37,12 @@ describe Vx::Lib::Spawn::SSH, ssh: true do
     it 'run command with timeout' do
       expect{
         run_ssh('echo $USER; sleep 0.5', timeout: 0.2)
-      }.to raise_error(Vx::Lib::Spawn::TimeoutError)
+      }.to raise_error(Vx::Lib::Shell::TimeoutError)
     end
 
     it 'run command with timeout successfuly' do
       code = run_ssh('echo $USER; sleep 0.2', timeout: 1)
-      expect(collected).to eq "#{user}\n"
+      expect(collected).to eq "#{user}\r\n"
       expect(code).to eq 0
     end
   end
@@ -45,53 +51,46 @@ describe Vx::Lib::Spawn::SSH, ssh: true do
     it 'run command with read timeout' do
       expect{
         run_ssh('sleep 0.5', read_timeout: 0.2)
-      }.to raise_error(Vx::Lib::Spawn::ReadTimeoutError)
+      }.to raise_error(Vx::Lib::Shell::ReadTimeoutError)
       expect(collected).to eq ""
     end
 
     it 'run command with read timeout in loop' do
       expect{
         run_ssh('sleep 0.1 ; echo $USER ; sleep 0.5', read_timeout: 0.3)
-      }.to raise_error(Vx::Lib::Spawn::ReadTimeoutError)
-      expect(collected).to eq "#{user}\n"
+      }.to raise_error(Vx::Lib::Shell::ReadTimeoutError)
+      expect(collected).to eq "#{user}\r\n"
     end
 
     it 'run command with read timeout successfuly' do
       code = run_ssh('echo $USER; sleep 0.1', read_timeout: 0.5)
-      expect(collected).to eq "#{user}\n"
+      expect(collected).to eq "#{user}\r\n"
       expect(code).to eq 0
     end
 
     it 'run command with read timeout in loop successfuly' do
       code = run_ssh('sleep 0.3 ; echo $USER; sleep 0.3 ; echo $USER', read_timeout: 0.5)
-      expect(collected).to eq "#{user}\n#{user}\n"
+      expect(collected).to eq "#{user}\r\n#{user}\r\n"
       expect(code).to eq 0
     end
   end
 
   it 'run and kill process' do
     code = run_ssh("echo $USER; kill -9 $$")
-    expect(collected).to eq "#{user}\n"
+    expect(collected).to eq "#{user}\r\n"
     expect(code).to eq(-4)
   end
 
   it 'run and interupt process' do
     code = run_ssh("echo $USER; kill -9 $$")
-    expect(collected).to eq "#{user}\n"
+    expect(collected).to eq "#{user}\r\n"
     expect(code).to eq(-4)
   end
 
-  it "should copy stdin with pty" do
-    io = StringIO.new("echo foo ; exit 0\n")
-    code = run_ssh("/bin/sh", stdin: io, pty: true)
-    expect(collected).to match "foo\r\n"
-    expect(code).to eq 0
-  end
-
   it "should copy stdin" do
-    io = StringIO.new("echo foo")
-    code = run_ssh("/bin/sh", stdin: io)
-    expect(collected).to match "foo\n"
+    io = StringIO.new("echo foo ; exit\n")
+    code = run_ssh(stdin: io)
+    expect(collected).to match "foo\r\n"
     expect(code).to eq 0
   end
 
@@ -104,11 +103,10 @@ describe Vx::Lib::Spawn::SSH, ssh: true do
   end
 
   def run_ssh(*args)
+    @proxy ||= ShellTest.new
     timeout do
-      open_ssh do |ssh|
-        ssh.spawn(*args) do |s|
-          collected << s
-        end
+      @proxy.sh(:ssh, conn).exec(*args) do |out|
+        collected << out
       end
     end
   end
