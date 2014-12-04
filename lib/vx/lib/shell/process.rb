@@ -18,11 +18,7 @@ module Vx
           read_timeout   = Shell::ReadTimeout.new options.delete(:read_timeout)
 
           prefix = "/usr/bin/env - TERM=ansi USER=$USER HOME=#{home} SHELL=/bin/bash /bin/bash -l"
-          if command
-            command = "#{prefix} -c #{Shellwords.escape command}"
-          else
-            command = prefix
-          end
+          command = "#{prefix} -c #{Shellwords.escape command}"
 
           status = spawn_command_internal(command, options) do |r|
             read_loop r, timeout, read_timeout, select_timeout, &block
@@ -35,25 +31,20 @@ module Vx
 
           def request_pipes(options)
             m,s   = PTY.open
-            r1,w1 = IO.pipe
 
             s.raw! # disable newline conversion.
             m.sync = true
             s.sync = true
 
-            [m, s, r1, w1]
+            [m, s]
           end
 
           def spawn_command_internal(command, options)
-            r1, w1, r2, w2 = request_pipes(options)
+            r1, w1 = request_pipes(options)
 
-            pid = ::Process.spawn(command, in: r2, out: w1, err: w1)
+            pid = ::Process.spawn(command, out: w1, err: w1)
 
             begin
-              if i = options[:stdin]
-                IO.copy_stream i, w2
-              end
-              w2.close
               w1.close
 
               yield r1
@@ -64,7 +55,6 @@ module Vx
             _, status = ::Process.wait2(pid)
 
             r1.close
-            r2.close
 
             status
           end

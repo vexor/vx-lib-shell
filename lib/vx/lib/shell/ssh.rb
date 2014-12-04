@@ -23,11 +23,7 @@ module Vx
           read_timeout  = Shell::ReadTimeout.new options.delete(:read_timeout)
 
           prefix = "/usr/bin/env - TERM=ansi USER=$USER HOME=#{home} SHELL=/bin/bash /bin/bash -l"
-          if command
-            command = "#{prefix} -c #{Shellwords.escape command}"
-          else
-            command = prefix
-          end
+          command = "#{prefix} -c #{Shellwords.escape command}"
 
           channel = spawn_channel command, read_timeout, options, &block
 
@@ -47,7 +43,7 @@ module Vx
         private
 
           def request_pty(channel, options)
-            channel.request_pty term: "ansi" do |_, pty_status|
+            channel.request_pty do |_, pty_status|
               raise StandardError, "could not obtain pty (ssh.channel.request_pty)" unless pty_status
               yield if block_given?
             end
@@ -85,11 +81,6 @@ module Vx
 
                   unless success
                     raise StandardError, "FAILED: couldn't execute command (ssh.channel.exec)"
-                  end
-
-                  if i = options[:stdin]
-                    channel.send_data i.read
-                    channel.eof!
                   end
 
                   channel.on_data do |_, data|

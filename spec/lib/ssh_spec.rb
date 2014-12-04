@@ -87,13 +87,6 @@ describe Vx::Lib::Shell::SSH, ssh: true do
     expect(code).to eq(-4)
   end
 
-  it "should copy stdin" do
-    io = StringIO.new("echo foo ; exit\n")
-    code = run_ssh(stdin: io)
-    expect(collected).to match "foo\r\n"
-    expect(code).to eq 0
-  end
-
   def open_ssh(&block)
     described_class.open(host, user, password: pass, paranoid: false, verbose: 2, port: port, &block)
   end
