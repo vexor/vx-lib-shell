@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Vx::Lib::Spawn::ReadTimeout do
+describe Vx::Lib::Shell::ReadTimeout do
   subject { described_class.new 0.2 }
 
   it "just created" do

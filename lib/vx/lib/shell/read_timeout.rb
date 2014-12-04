@@ -1,6 +1,6 @@
 module Vx
   module Lib
-    module Spawn
+    module Shell
       class ReadTimeout
 
         def initialize(val)

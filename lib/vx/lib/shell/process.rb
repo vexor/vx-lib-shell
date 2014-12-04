@@ -1,18 +1,26 @@
 require 'timeout'
 require 'pty'
+require 'shellwords'
 require 'io/console'
 
 module Vx
   module Lib
-    module Spawn
-      module Process
+    module Shell
+      class Process
 
-        extend self
+        def exec(*args, &block)
+          options        = args.last.is_a?(Hash) ? args.pop : {}
+          command        = args.first
 
-        def spawn(command, options = {}, &block)
-          select_timeout = options.delete(:pool_interval) || Spawn.pool_interval
-          timeout        = Spawn::Timeout.new options.delete(:timeout)
-          read_timeout   = Spawn::ReadTimeout.new options.delete(:read_timeout)
+          select_timeout = options.delete(:pool_interval) || Shell.pool_interval
+          timeout        = Shell::Timeout.new options.delete(:timeout)
+          read_timeout   = Shell::ReadTimeout.new options.delete(:read_timeout)
+
+          if command
+            command = "/bin/bash -l -c #{Shellwords.escape command}"
+          else
+            command = "/bin/bash -l"
+          end
 
           status = spawn_command_internal(command, options) do |r|
             read_loop r, timeout, read_timeout, select_timeout, &block
@@ -24,24 +32,14 @@ module Vx
         private
 
           def request_pipes(options)
-            if options[:pty]
-              m,s   = PTY.open
-              r1,w1 = IO.pipe
+            m,s   = PTY.open
+            r1,w1 = IO.pipe
 
-              s.raw! # disable newline conversion.
-              m.sync = true
-              s.sync = true
+            s.raw! # disable newline conversion.
+            m.sync = true
+            s.sync = true
 
-              [m, s, r1, w1]
-            else
-              r1,w1 = IO.pipe
-              r2,w2 = IO.pipe
-
-              w1.sync = true
-              r1.sync = true
-
-              [r1, w1, r2, w2]
-            end
+            [m, s, r1, w1]
           end
 
           def spawn_command_internal(command, options)
@@ -72,9 +70,9 @@ module Vx
           def compute_exit_code(command, status, timeout, read_timeout)
             case
             when read_timeout.happened?
-              raise Spawn::ReadTimeoutError.new command, read_timeout.value
+              raise Shell::ReadTimeoutError.new command, read_timeout.value
             when timeout.happened?
-              raise Spawn::TimeoutError.new command, timeout.value
+              raise Shell::TimeoutError.new command, timeout.value
             else
               termsig   = status && status.termsig
               exit_code = status && status.exitstatus

@@ -1,6 +1,6 @@
 module Vx
   module Lib
-    module Spawn
+    module Shell
       class Timeout
         def initialize(value)
           @value = (value.to_f > 0) ? value.to_f : nil
