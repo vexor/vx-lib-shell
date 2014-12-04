@@ -21,9 +21,9 @@ describe Vx::Lib::Shell::SSH, ssh: true do
       )
   end
 
-  it "run command successfuly with pty" do
-    code = run_ssh 'env'
-    expect(collected).to match(/SSH_TTY=/)
+  it "run command successfuly" do
+    code = run_ssh 'echo $HOME'
+    expect(collected).to match(/\/home\//)
     expect(code).to eq 0
   end
 

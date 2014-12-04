@@ -11,15 +11,17 @@ module Vx
         def exec(*args, &block)
           options        = args.last.is_a?(Hash) ? args.pop : {}
           command        = args.first
+          home           = options[:home] || "$HOME"
 
           select_timeout = options.delete(:pool_interval) || Shell.pool_interval
           timeout        = Shell::Timeout.new options.delete(:timeout)
           read_timeout   = Shell::ReadTimeout.new options.delete(:read_timeout)
 
+          prefix = "/usr/bin/env - TERM=ansi USER=$USER HOME=#{home} SHELL=/bin/bash /bin/bash -l"
           if command
-            command = "/bin/bash -l -c #{Shellwords.escape command}"
+            command = "#{prefix} -c #{Shellwords.escape command}"
           else
-            command = "/bin/bash -l"
+            command = prefix
           end
 
           status = spawn_command_internal(command, options) do |r|
