@@ -87,6 +87,15 @@ describe Vx::Lib::Shell::SSH, ssh: true do
     expect(code).to eq(-4)
   end
 
+  it "dont modify options" do
+    options = {read_timeout: 100}
+    code = run_ssh("echo 1", options)
+    expect(code).to eq(0)
+    code = run_ssh("echo 1", options)
+    expect(code).to eq(0)
+    expect(options).to eq(read_timeout: 100)
+  end
+
   def open_ssh(&block)
     described_class.open(host, user, password: pass, paranoid: false, verbose: 2, port: port, &block)
   end

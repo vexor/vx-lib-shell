@@ -9,7 +9,7 @@ module Vx
       class Process
 
         def exec(*args, &block)
-          options        = args.last.is_a?(Hash) ? args.pop : {}
+          options        = args.last.is_a?(Hash) ? args.pop.dup : {}
           command        = args.first
           home           = options[:home] || "$HOME"
 

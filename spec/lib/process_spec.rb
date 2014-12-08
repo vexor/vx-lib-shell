@@ -75,6 +75,15 @@ describe Vx::Lib::Shell::Process do
     expect(code).to eq(-2)
   end
 
+  it "dont modify options" do
+    options = {read_timeout: 100}
+    code = run("echo 1", options)
+    expect(code).to eq 0
+    code = run("echo 1", options)
+    expect(code).to eq 0
+    expect(options).to eq(read_timeout: 100)
+  end
+
   def run(*args, &block)
     @proxy ||= ShellTest.new
     timeout do
