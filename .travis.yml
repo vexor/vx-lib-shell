@@ -1,16 +1,12 @@
 rvm:
-  - 1.9.3
-  - 2.0
   - 2.1
+  - 2.2
 before_install:
-  - echo 'travis:travis' | sudo chpasswd
+  - echo 'vexor:vexor' | sudo chpasswd
   - echo 'PasswordAuthentication yes' | sudo tee -a /etc/ssh/sshd_config
-  - sudo service ssh restart
 before_script:
-  - export SSH_USER=travis
-  - export SSH_PASS=travis
+  - export SSH_USER=vexor
+  - export SSH_PASS=vexor
   - export SSH_HOST=localhost
   - export SSH_PORT=22
-  - env
-  - sudo -u postgres psql -c "select version()"
 script: bundle exec rake SPEC_OPTS='-fd --color --order=rand'
